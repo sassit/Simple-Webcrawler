@@ -2,6 +2,8 @@ package name.sassi.webcrawler;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
@@ -40,11 +42,21 @@ public class RecursiveLoader extends RecursiveAction {
                 .forEach(href -> {
                     try {
                         URL url = new URL(href);
-                        File file = new File(context.getDestination() + substringAfterLast(url.getFile(), "/"));
-                        copyURLToFile(url, file);
-                        context.downloaded();
-                        System.out.printf("Downloaded file #%d: %s to %s\n", context.getDownloaded(), href, file.getAbsolutePath());
-                    } catch (IOException e) {
+                        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
+                                url.getPath(), url.getQuery(), url.getRef());
+                        url = uri.toURL();
+                        String filename = substringAfterLast(url.getFile(), "/");
+                        File file = new File(context.getDestination() + filename);
+                        if (!file.exists()) {
+                            copyURLToFile(url, file);
+                            context.downloaded();
+                            System.out.printf("Downloaded file #%d: %s to %s\n", context.getDownloaded(),
+                                    href, file.getAbsolutePath());
+                        } else {
+                            // For paused or faulty downloads.
+                            System.out.printf("File %s already resident.", file.getAbsolutePath());
+                        }
+                    } catch (IOException | URISyntaxException e) {
                         e.printStackTrace();
                     }
                 });

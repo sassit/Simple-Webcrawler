@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.RecursiveAction;
 
-import static com.google.common.collect.Sets.newConcurrentHashSet;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -51,7 +50,7 @@ public class RecursiveCrawler extends RecursiveAction {
     }
 
     private Set<String> getElements(Set<String> links) {
-        Set<String> newLinks = newConcurrentHashSet();
+        Set<String> newLinks = newHashSet();
         try {
             for (String link : links) {
                 Connection connect = connect(link)
