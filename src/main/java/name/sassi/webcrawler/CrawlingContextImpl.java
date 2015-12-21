@@ -13,8 +13,8 @@ public class CrawlingContextImpl implements CrawlingContext {
     private final int threshhold;
     private final AtomicInteger visited, downloaded;
     private final ConcurrentSkipListSet<String> visitedLinks;
-    private final String destination;
     private final Set<String> content;
+    private final String destination;
     private final String root;
 
     public CrawlingContextImpl(int threshhold, String destination, Set<String> content, String root) {

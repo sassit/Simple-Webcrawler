@@ -2,6 +2,7 @@ package name.sassi.webcrawler;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -42,23 +43,31 @@ public class RecursiveLoader extends RecursiveAction {
                 .forEach(href -> {
                     try {
                         URL url = new URL(href);
-                        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
-                                url.getPath(), url.getQuery(), url.getRef());
-                        url = uri.toURL();
-                        String filename = substringAfterLast(url.getFile(), "/");
-                        File file = new File(context.getDestination() + filename);
+                        URL normalized = normalizeURL(url);
+                        File file = defineOutputFile(url);
                         if (!file.exists()) {
-                            copyURLToFile(url, file);
+                            copyURLToFile(normalized, file);
                             context.downloaded();
                             System.out.printf("Downloaded file #%d: %s to %s\n", context.getDownloaded(),
                                     href, file.getAbsolutePath());
                         } else {
                             // For paused or faulty downloads.
-                            System.out.printf("File %s already resident.", file.getAbsolutePath());
+                            System.out.printf("File %s already resident.\n", file.getAbsolutePath());
                         }
                     } catch (IOException | URISyntaxException e) {
                         e.printStackTrace();
                     }
                 });
+    }
+
+    private File defineOutputFile(URL url) {
+        String filename = substringAfterLast(url.getFile(), "/");
+        return new File(context.getDestination() + filename);
+    }
+
+    private URL normalizeURL(URL url) throws URISyntaxException, MalformedURLException {
+        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
+                url.getPath(), url.getQuery(), url.getRef());
+        return uri.toURL();
     }
 }

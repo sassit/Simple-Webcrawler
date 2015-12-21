@@ -10,14 +10,14 @@ import static com.google.common.collect.Sets.newHashSet;
  */
 public class WebCrawler {
     public static void main(String[] args) throws IOException, InterruptedException {
-        ForkJoinPool pool = new ForkJoinPool(4);
-        String root = "http://www.allpdfs.com";
-        CrawlingContext context = new CrawlingContextImpl(10, "/tmp/downloads/", newHashSet("pdf"), root);
+        ForkJoinPool pool = new ForkJoinPool();
+        String root = "http://www.allitebooks.com";
+        CrawlingContext context = new CrawlingContextImpl(10, "/tmp/allitebooks/", newHashSet("pdf"), root);
         RecursiveCrawler task = new RecursiveCrawler(newHashSet(root), context);
-        pool.execute(task);
+        pool.invoke(task);
         pool.shutdown();
-        if(task.isCompletedNormally()) {
-            System.out.printf("Process completed normally\n");
+        if (task.isCompletedNormally()) {
+            System.out.println("Process completed normally.");
         }
     }
 }
