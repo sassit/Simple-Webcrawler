@@ -67,7 +67,7 @@ public class RecursiveLoader extends RecursiveAction {
 
     private URL normalizeURL(URL url) throws URISyntaxException, MalformedURLException {
         URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
-                url.getPath(), url.getQuery(), url.getRef());
+                url.getPath().replace("#", "%23"), url.getQuery(), url.getRef());
         return uri.toURL();
     }
 }
